@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Studio – Créateur de CV Professionnel</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <!-- TOP BAR -->
+        <div id="topbar">
+            <div class="logo">✦ CV Studio</div>
+            <div class="format-pills">
+                <button class="fmt-pill active" onclick="setFormat('two-col')">2 Colonnes</button>
+                <button class="fmt-pill" onclick="setFormat('classic')">Classique</button>
+                <button class="fmt-pill" onclick="setFormat('modern')">Moderne</button>
+            </div>
+            <div class="topbar-sep"></div>
+            <button class="tb-btn topbar-hidden" onclick="saveData()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                    <polyline points="17 21 17 13 7 13 7 21" />
+                    <polyline points="7 3 7 8 15 8" />
+                </svg>
+                <span>Sauvegarder</span>
+            </button>
+            <button class="tb-btn primary" onclick="exportPDF()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                <span>Exporter PDF</span>
+            </button>
+            <button id="sidebar-toggle" onclick="toggleSidebar()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                </svg>
+                Panneau
+            </button>
+        </div>
+
+        <div id="main-area">
+            <!-- SIDEBAR -->
+            <div id="sidebar">
+                <!-- Tab Nav -->
+                <div class="tab-nav">
+                    <button class="tab-btn active" onclick="switchTab('design')">Design</button>
+                    <button class="tab-btn" onclick="switchTab('infos')">Infos</button>
+                    <button class="tab-btn" onclick="switchTab('parcours')">Parcours</button>
+                    <button class="tab-btn" onclick="switchTab('skills')">Skills</button>
+                    <button class="tab-btn" onclick="switchTab('extras')">Extras</button>
+                </div>
+
+                <!-- TAB: DESIGN -->
+                <div id="tab-design" class="tab-panel active tab-content">
+                    <!-- Themes -->
+                    <div class="section-label">Thèmes prédéfinis</div>
+                    <div class="theme-grid" id="theme-grid"></div>
+                    <div class="divider"></div>
+
+                    <!-- Color customization -->
+                    <div class="section-label">Couleurs personnalisées</div>
+                    <div class="color-grid">
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-bg)"><input type="color" id="color-bg"
+                                    value="#ffffff" oninput="applyColor('--cv-bg',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Fond CV</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-col-left)"><input type="color"
+                                    id="color-left" value="#1e293b"
+                                    oninput="applyColor('--cv-col-left',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Fond gauche</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-col-right)"><input type="color"
+                                    id="color-right" value="#ffffff"
+                                    oninput="applyColor('--cv-col-right',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Fond droite</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-text)"><input type="color"
+                                    id="color-text" value="#1e293b"
+                                    oninput="applyColor('--cv-text',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Texte</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-subtitle)"><input type="color"
+                                    id="color-sub" value="#64748b"
+                                    oninput="applyColor('--cv-subtitle',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Sous-titres</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-section-title)"><input type="color"
+                                    id="color-sec" value="#1e293b"
+                                    oninput="applyColor('--cv-section-title',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Titres sect.</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-name)"><input type="color"
+                                    id="color-name" value="#1e293b"
+                                    oninput="applyColor('--cv-name',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Nom</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-job)"><input type="color"
+                                    id="color-job" value="#6c63ff"
+                                    oninput="applyColor('--cv-job',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Métier</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-bar)"><input type="color"
+                                    id="color-bar" value="#6c63ff"
+                                    oninput="applyColor('--cv-bar',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Barres skill</div>
+                        </div>
+                        <div class="color-item">
+                            <div class="color-swatch" style="background:var(--cv-accent)"><input type="color"
+                                    id="color-accent" value="#6c63ff"
+                                    oninput="applyColor('--cv-accent',this.value);updateSwatch(this)"></div>
+                            <div class="color-label">Accent</div>
+                        </div>
+                    </div>
+                    <div class="divider"></div>
+
+                    <!-- Photo -->
+                    <div class="section-label">Photo</div>
+                    <div class="photo-zone" onclick="document.getElementById('photo-input').click()">
+                        <div class="photo-preview" id="photo-preview-thumb">
+                            <img id="photo-thumb-img" src="" style="display:none" alt="">
+                            <svg style="width:36px;height:36px;color:var(--ui-text3);margin:22px auto;display:block"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="8" r="4" />
+                                <path d="M20 21a8 8 0 1 0-16 0" />
+                            </svg>
+                        </div>
+                        <div style="font-size:.8rem;color:var(--ui-text3)">Cliquez ou glissez une image</div>
+                        <input type="file" id="photo-input" accept="image/*" onchange="handlePhoto(this)"
+                            style="display:none">
+                    </div>
+                    <div class="form-row" style="margin-top:10px">
+                        <div class="form-group">
+                            <label class="form-label">Forme</label>
+                            <select class="form-select" id="photo-shape" onchange="renderCV()">
+                                <option value="circle">Rond</option>
+                                <option value="square">Carré</option>
+                                <option value="rounded">Arrondi</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Position</label>
+                            <select class="form-select" id="photo-position" onchange="renderCV()">
+                                <option value="left">Gauche</option>
+                                <option value="center">Centre</option>
+                                <option value="right">Droite</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: INFOS -->
+                <div id="tab-infos" class="tab-panel tab-content">
+                    <div class="section-card open">
+                        <div class="section-card-header" onclick="toggleCard(this)">
+                            <div class="section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="8" r="4" />
+                                    <path d="M20 21a8 8 0 1 0-16 0" />
+                                </svg></div>
+                            <div class="section-card-title">Informations personnelles</div>
+                            <div class="section-card-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" width="16" height="16">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg></div>
+                        </div>
+                        <div class="section-card-body">
+                            <div class="form-row">
+                                <div class="form-group"><label class="form-label">Prénom</label><input
+                                        class="form-input" id="f-prenom" placeholder="Jean" oninput="renderCV()"></div>
+                                <div class="form-group"><label class="form-label">Nom</label><input class="form-input"
+                                        id="f-nom" placeholder="Dupont" oninput="renderCV()"></div>
+                            </div>
+                            <div class="form-group"><label class="form-label">Titre / Métier</label><input
+                                    class="form-input" id="f-titre" placeholder="Développeur Web" oninput="renderCV()">
+                            </div>
+                            <div class="form-group"><label class="form-label">Email</label><input class="form-input"
+                                    id="f-email" placeholder="email@exemple.com" oninput="renderCV()"></div>
+                            <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input"
+                                    id="f-tel" placeholder="+33 6 00 00 00 00" oninput="renderCV()"></div>
+                            <div class="form-group"><label class="form-label">Adresse</label><input class="form-input"
+                                    id="f-adresse" placeholder="Paris, France" oninput="renderCV()"></div>
+                            <div class="form-group"><label class="form-label">LinkedIn / Portfolio</label><input
+                                    class="form-input" id="f-linkedin" placeholder="linkedin.com/in/jean"
+                                    oninput="renderCV()"></div>
+                        </div>
+                    </div>
+                    <div class="section-card">
+                        <div class="section-card-header" onclick="toggleCard(this)">
+                            <div class="section-icon" style="background:#ff6584"><svg viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2">
+                                    <path d="M12 20h9" />
+                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                                </svg></div>
+                            <div class="section-card-title">Profil / Bio</div>
+                            <div class="section-card-toggle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" width="16" height="16">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg></div>
+                        </div>
+                        <div class="section-card-body">
+                            <div class="form-group"><textarea class="form-input" id="f-bio"
+                                    placeholder="Décrivez-vous en quelques phrases..." rows="4"
+                                    oninput="renderCV()"></textarea></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB: PARCOURS -->
+                <div id="tab-parcours" class="tab-panel tab-content">
+                    <!-- Experiences -->
+                    <div class="section-label">Expériences professionnelles</div>
+                    <div id="exp-list"></div>
+                    <button class="add-btn" onclick="addItem('exp')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter une expérience
+                    </button>
+                    <div class="divider"></div>
+                    <!-- Formation -->
+                    <div class="section-label">Formation</div>
+                    <div id="edu-list"></div>
+                    <button class="add-btn" onclick="addItem('edu')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter une formation
+                    </button>
+                </div>
+
+                <!-- TAB: SKILLS -->
+                <div id="tab-skills" class="tab-panel tab-content">
+                    <!-- Compétences -->
+                    <div class="section-label">Compétences</div>
+                    <div class="form-group">
+                        <label class="form-label">Style d'affichage</label>
+                        <select class="form-select" id="skill-display" onchange="renderCV()">
+                            <option value="bar">Barre de progression</option>
+                            <option value="dots">Points (5/5)</option>
+                            <option value="stars">Étoiles</option>
+                            <option value="chip">Puces texte</option>
+                        </select>
+                    </div>
+                    <div id="skill-list"></div>
+                    <button class="add-btn" onclick="addItem('skill')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter une compétence
+                    </button>
+                    <div class="divider"></div>
+                    <!-- Langues -->
+                    <div class="section-label">Langues</div>
+                    <div id="lang-list"></div>
+                    <button class="add-btn" onclick="addItem('lang')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter une langue
+                    </button>
+                    <div class="divider"></div>
+                    <!-- Intérêts -->
+                    <div class="section-label">Centres d'intérêt</div>
+                    <div class="form-group"><textarea class="form-input" id="f-interests"
+                            placeholder="Voyage, Musique, Sport, Photo..." rows="2" oninput="renderCV()"></textarea>
+                    </div>
+                </div>
+
+                <!-- TAB: EXTRAS -->
+                <div id="tab-extras" class="tab-panel tab-content">
+                    <!-- Projets -->
+                    <div class="section-label">Projets</div>
+                    <div id="proj-list"></div>
+                    <button class="add-btn" onclick="addItem('proj')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter un projet
+                    </button>
+                    <div class="divider"></div>
+                    <!-- Certifications -->
+                    <div class="section-label">Certifications</div>
+                    <div id="cert-list"></div>
+                    <button class="add-btn" onclick="addItem('cert')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter une certification
+                    </button>
+                    <div class="divider"></div>
+                    <!-- Références -->
+                    <div class="section-label">Références</div>
+                    <div id="ref-list"></div>
+                    <button class="add-btn" onclick="addItem('ref')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        Ajouter une référence
+                    </button>
+                </div>
+            </div>
+
+            <!-- PREVIEW AREA -->
+            <div id="preview-area">
+                <div class="zoom-bar">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="color:var(--ui-text3)">
+                        <circle cx="11" cy="11" r="8" />
+                        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                    </svg>
+                    <input type="range" class="zoom-slider" id="zoom-slider" min="40" max="100" value="75"
+                        oninput="setZoom(this.value)">
+                    <span class="zoom-label" id="zoom-label">75%</span>
+                    <button class="tb-btn" onclick="window.print()" style="padding:4px 10px;font-size:.75rem">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <polyline points="6 9 6 2 18 2 18 9" />
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+                            <rect x="6" y="14" width="12" height="8" />
+                        </svg>
+                        Imprimer
+                    </button>
+                </div>
+                <div id="preview-wrapper" style="transform:scale(.75)">
+                    <div id="cv-preview" class="cv-two-col">
+                        <div id="cv-inner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">✓ Sauvegardé</div>
+
+    <!-- PAYTECH PAYMENT MODAL -->
+    <div id="wave-modal-overlay">
+        <div id="wave-modal">
+            <button class="wm-close" onclick="closeWaveModal()">✕</button>
+
+            <!-- ETAPE 1 : Choisir le moyen de paiement -->
+            <div id="wm-step1">
+                <div class="wm-wave-logo" style="background:linear-gradient(135deg,#6c63ff,#ff6584);font-size:1.4rem">💳
+                </div>
+                <div class="wm-title">Paiement requis</div>
+                <div class="wm-subtitle">Pour télécharger votre CV en PDF,<br>choisissez votre moyen de paiement.</div>
+                <div class="wm-amount-box">
+                    <div class="wm-amount">500 FCFA</div>
+                    <div class="wm-amount-label">Téléchargement CV PDF</div>
+                </div>
+                <div id="wm-payment-methods" style="display:flex;flex-direction:column;gap:10px;margin:16px 0">
+                    <button class="wm-method-btn" onclick="initierPaiement('Orange Money')">
+                        <span style="font-size:1.2rem">🟠</span> Orange Money
+                    </button>
+                    <button class="wm-method-btn" onclick="initierPaiement('Wave')">
+                        <span style="font-size:1.2rem">🌊</span> Wave
+                    </button>
+                    <button class="wm-method-btn" onclick="initierPaiement('Free Money')">
+                        <span style="font-size:1.2rem">🔵</span> Free Money
+                    </button>
+                    <button class="wm-method-btn" onclick="initierPaiement('Wizall Money')">
+                        <span style="font-size:1.2rem">🟢</span> Wizall Money
+                    </button>
+                </div>
+                <div class="wm-note">🔒 Paiement sécurisé via PayTech · PCI DSS & 3D Secure</div>
+            </div>
+
+            <!-- ETAPE 2 : Chargement -->
+            <div id="wm-step2" style="display:none">
+                <div class="wm-wave-logo" style="background:linear-gradient(135deg,#6c63ff,#ff6584);font-size:1.6rem">⏳
+                </div>
+                <div class="wm-title">Redirection en cours...</div>
+                <div class="wm-subtitle">Veuillez patienter,<br>nous vous redirigeons vers la page de paiement.</div>
+                <div
+                    style="margin:24px auto;width:40px;height:40px;border:3px solid var(--ui-border);border-top-color:var(--ui-accent);border-radius:50%;animation:spin 0.8s linear infinite">
+                </div>
+                <div class="wm-note">⚡ Vous serez redirigé automatiquement...</div>
+            </div>
+
+            <!-- ETAPE 3 : Erreur -->
+            <div id="wm-step3" style="display:none">
+                <div class="wm-wave-logo" style="background:linear-gradient(135deg,#ef4444,#f97316);font-size:1.6rem">❌
+                </div>
+                <div class="wm-title">Erreur de paiement</div>
+                <div class="wm-subtitle" id="wm-error-msg">Une erreur est survenue.<br>Veuillez réessayer.</div>
+                <button class="wm-pay-btn" style="margin-top:16px" onclick="goToStep1()">
+                    ← Réessayer
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
